@@ -19,8 +19,8 @@ Navigate to your ComfyUI/custom_nodes/ directory.
 Clone this repository:
    
 ```Bash
-
-    git clone https://github.com/solai25/ComfyUI-Bonsai-4B-2Bit
+   git clone https://github.com/solai25/ComfyUI-Bonsai-4B-2Bit
+```
 
 ###(Optional) If you don't use Git, download the folder and place it in your custom_nodes/ directory.
 
@@ -29,12 +29,12 @@ Clone this repository:
 The node expects the model files to be organized in your ComfyUI directory:
 
 ```
-ComfyUI/
-└── models/
-    └── Bonsai-4B/   <-- Create this folder
-        ├── text_encoder-hqq-4bit/
-        ├── transformer-gemlite-int2/
-        └── vae/
+    ComfyUI/
+    └── models/
+        └── Bonsai-4B/   <-- Create this folder
+            ├── text_encoder-hqq-4bit/
+            ├── transformer-gemlite-int2/
+            └── vae/
 ```
 
 
