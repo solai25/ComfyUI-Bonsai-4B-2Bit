@@ -1,5 +1,7 @@
 ﻿ComfyUI-Bonsai-4B
 
+<img height="350" alt="Custom Resolution 🐲" src="example_workflow\Bonsai-image-4B (2Bit).png" />
+
 A custom ComfyUI node to run the Bonsai 4B (2-bit Ternary) image generation model locally. This node utilizes optimized Gemlite and HQQ kernels for high-speed inference on Windows/Linux GPU environments.
 ⚠️ Prerequisites
 
@@ -25,37 +27,30 @@ pip install hqq gemlite triton-windows
 
 The node expects the model files to be organized in your ComfyUI directory:
 
-    Create a folder at ComfyUI/models/Bonsai-4B/.
-
-    Ensure the following sub-folders are present inside Bonsai-4B/:
-
-        transformer-gemlite-int2/
-
-        text_encoder-hqq-4bit/
-
-        vae/
+```
+ComfyUI/
+└── models/
+    └── Bonsai-4B/   <-- Create this folder
+        ├── text_encoder-hqq-4bit/
+        ├── transformer-gemlite-int2/
+        └── vae/
+```
 
 Note: If the model is not found, the node will attempt to automatically download the required weights from Hugging Face upon the first run.
+
 ## 🚀 Usage
 
-    Restart ComfyUI.
+Restart ComfyUI.
+Right-click the canvas and select Add Node > Bonsai Image > Bonsai 4B (Gemlite 2-bit).
+Connect the IMAGE output to a Save Image node.
+Configure your prompt and inference settings.
+ Queue Prompt. The model will warm up on the GPU for the first generation.
 
-    Right-click the canvas and select Add Node > Bonsai Image > Bonsai 4B (Gemlite 2-bit).
-
-    Connect the IMAGE output to a Save Image node.
-
-    Configure your prompt and inference settings.
-
-    Queue Prompt. The model will warm up on the GPU for the first generation.
-
-## 🧩 Node Structure
 ## 📝 Troubleshooting
 
-    Missing Kernels: Ensure triton is installed correctly for your specific GPU architecture.
-
-    RuntimeError (prewarm): If you see a prewarm error, ensure your model paths in ComfyUI/models/Bonsai-4B/ are not empty and contain the necessary config.json files for each component.
-
-    VRAM Issues: This model is highly optimized, but ensure you have at least 6GB of VRAM available to accommodate the loading process.
+Missing Kernels: Ensure triton is installed correctly for your specific GPU architecture.
+RuntimeError (prewarm): If you see a prewarm error, ensure your model paths in ComfyUI/models/Bonsai-4B/ are not empty and contain the necessary config.json files for each component.
+VRAM Issues: This model is highly optimized, but ensure you have at least 6GB of VRAM available to accommodate the loading process.
 
 ## ⚖️ License
 
