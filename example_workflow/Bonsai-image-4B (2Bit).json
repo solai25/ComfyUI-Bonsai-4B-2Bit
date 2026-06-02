@@ -1,0 +1,114 @@
+{
+  "id": "e1519ca7-aa62-4fdf-ab94-dee05ec53f76",
+  "revision": 0,
+  "last_node_id": 7,
+  "last_link_id": 7,
+  "nodes": [
+    {
+      "id": 2,
+      "type": "PreviewImage",
+      "pos": [
+        880,
+        840
+      ],
+      "size": [
+        280,
+        470
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.23.0",
+        "Node name for S&R": "PreviewImage",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 3,
+      "type": "BonsaiTernaryNode",
+      "pos": [
+        600,
+        840
+      ],
+      "size": [
+        270,
+        470
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BonsaiTernaryNode",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.8"
+        }
+      },
+      "widgets_values": [
+        "A regal woman with dark, wet hair and golden eyes gazes forward under a vibrant purple glow, her face adorned with an ornate gold crown studded with jewels and intricate necklaces that shimmer against the electric energy crackling around her. The ambient lighting casts radiant pink hues across her skin while stylized lightning effects pulse in vivid magenta along her shoulders, enhancing the mystical aura of her royal attire. Her expression is serene yet intense as droplets of sweat glisten on her cheeks beneath a glowing headpiece and heavy gold choker, suggesting both power and vulnerability within this fantastical setting.",
+        768,
+        1024,
+        4,
+        1,
+        42,
+        "fixed",
+        "C:\\ComfyUI_portable\\ComfyUI\\models\\Bonsai-4B"
+      ]
+    }
+  ],
+  "links": [
+    [
+      2,
+      3,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ue_links": [],
+    "links_added_by_ue": [],
+    "ds": {
+      "scale": 0.9646149645000102,
+      "offset": [
+        -18.418783432819396,
+        -529.5276329339688
+      ]
+    },
+    "frontendVersion": "1.44.19",
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true
+  },
+  "version": 0.4
+}

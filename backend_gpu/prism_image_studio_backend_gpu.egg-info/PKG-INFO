@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: prism-image-studio-backend-gpu
+Version: 0.0.1
+Summary: GPU (gemlite/HQQ on H100) inference server for prism-image-studio. Phase-5 prep skeleton.
+Requires-Python: >=3.11
+Requires-Dist: fastapi>=0.115
+Requires-Dist: uvicorn[standard]>=0.30
+Requires-Dist: pydantic>=2.7
+Requires-Dist: pillow>=10.4
+Requires-Dist: diffusers>=0.38.0
+Provides-Extra: dev
+Requires-Dist: httpx>=0.27; extra == "dev"
