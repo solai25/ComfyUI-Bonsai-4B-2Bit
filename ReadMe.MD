@@ -50,9 +50,11 @@ Note: If the model is not found, the node will attempt to automatically download
 
 ## 📝 Troubleshooting
 
-Missing Kernels: Ensure triton is installed correctly for your specific GPU architecture.
-RuntimeError (prewarm): If you see a prewarm error, ensure your model paths in ComfyUI/models/Bonsai-4B/ are not empty and contain the necessary config.json files for each component.
-VRAM Issues: This model is highly optimized, but ensure you have at least 6GB of VRAM available to accommodate the loading process.
+* **Missing Kernels:** Ensure triton is installed correctly for your specific GPU architecture.
+
+* **RuntimeError (prewarm):** If you see a prewarm error, ensure your model paths in ComfyUI/models/Bonsai-4B/ are not empty and contain the necessary config.json files for each component.
+
+* **VRAM Issues:** This model is highly optimized, but ensure you have at least 6GB of VRAM available to accommodate the loading process.
 
 ## ⚖️ License
 
