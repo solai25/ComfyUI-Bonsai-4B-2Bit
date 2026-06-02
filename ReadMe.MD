@@ -26,12 +26,12 @@ pip install hqq gemlite triton-windows
 The node expects the model files to be organized in your ComfyUI directory:
 
 '''
-ComfyUI/
-└── models/
-    └── Bonsai-4B/   <-- Create this folder
-        ├── text_encoder-hqq-4bit/
-        ├── transformer-gemlite-int2/
-        └── vae/
+    ComfyUI/
+    └── models/
+        └── Bonsai-4B/   <-- Create this folder
+            ├── text_encoder-hqq-4bit/
+            ├── transformer-gemlite-int2/
+            └── vae/
 '''
 
 Note: If the model is not found, the node will attempt to automatically download the required weights from Hugging Face upon the first run.
