@@ -1,10 +1,7 @@
 ﻿ComfyUI-Bonsai-4B
 
 <img height="350" alt="Custom Resolution 🐲" src="example_workflow\Bonsai-image-4B (2Bit).png" />
-<<<<<<< HEAD
 
-=======
->>>>>>> dec336dfebf152cee0d07fa04d105b29455334fd
 A custom ComfyUI node to run the Bonsai 4B (2-bit Ternary) image generation model locally. This node utilizes optimized Gemlite and HQQ kernels for high-speed inference on Windows/Linux GPU environments.
 ⚠️ Prerequisites
 
@@ -17,20 +14,20 @@ pip install hqq gemlite triton-windows
 
 ## 🛠️ Installation
 
-    Navigate to your ComfyUI/custom_nodes/ directory.
+Navigate to your ComfyUI/custom_nodes/ directory.
 
-    Clone this repository:
-    Bash
+Clone this repository:
+   
+```Bash
 
     git clone https://github.com/solai25/ComfyUI-Bonsai-4B-2Bit
 
-    (Optional) If you don't use Git, download the folder and place it in your custom_nodes/ directory.
+###(Optional) If you don't use Git, download the folder and place it in your custom_nodes/ directory.
 
 ## 📥 Model Setup
 
 The node expects the model files to be organized in your ComfyUI directory:
 
-<<<<<<< HEAD
 ```
 ComfyUI/
 └── models/
@@ -39,26 +36,17 @@ ComfyUI/
         ├── transformer-gemlite-int2/
         └── vae/
 ```
-=======
-'''
-    ComfyUI/
-    └── models/
-        └── Bonsai-4B/   <-- Create this folder
-            ├── text_encoder-hqq-4bit/
-            ├── transformer-gemlite-int2/
-            └── vae/
-'''
->>>>>>> dec336dfebf152cee0d07fa04d105b29455334fd
+
 
 Note: If the model is not found, the node will attempt to automatically download the required weights from Hugging Face upon the first run.
 
 ## 🚀 Usage
 
-Restart ComfyUI.
-Right-click the canvas and select Add Node > Bonsai Image > Bonsai 4B (Gemlite 2-bit).
-Connect the IMAGE output to a Save Image node.
-Configure your prompt and inference settings.
- Queue Prompt. The model will warm up on the GPU for the first generation.
+* Restart ComfyUI.
+* Right-click the canvas and select Add Node > Bonsai Image > Bonsai 4B (Gemlite 2-bit).
+* Connect the IMAGE output to a Save Image node.
+* Configure your prompt and inference settings.
+* Queue Prompt. The model will warm up on the GPU for the first generation.
 
 ## 📝 Troubleshooting
 
