@@ -14,13 +14,27 @@ pip install hqq gemlite triton-windows
 
 ## 🛠️ Installation
 
-Navigate to your ComfyUI/custom_nodes/ directory.
+1. Navigate to your ComfyUI/custom_nodes/ directory.
 
-Clone this repository:
+2. Clone this repository:
+
+3. Install Dependencies:
+
+   * For Standard Python (venv/Global):
    
-```Bash
-   git clone https://github.com/solai25/ComfyUI-Bonsai-4B-2Bit
-```
+   ```Bash
+    cd ComfyUI-Bonsai-4B
+    pip install -r requirements.txt
+    ```
+
+   * For ComfyUI Portable (Windows):
+   
+   If you are using the portable version, open your ComfyUI_windows_portable folder and run the command using the internal Python executable:
+    Bash
+    
+    ```
+    .\python_embeded\python.exe -m pip install -r custom_nodes\ComfyUI-Bonsai-4B\requi
+    ```
 
 ###(Optional) If you don't use Git, download the folder and place it in your custom_nodes/ directory.
 
