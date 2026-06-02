@@ -3,6 +3,7 @@
 <img height="350" alt="Custom Resolution 🐲" src="example_workflow\Bonsai-image-4B (2Bit).png" />
 
 A custom ComfyUI node to run the Bonsai 4B (2-bit Ternary) image generation model locally. This node utilizes optimized Gemlite and HQQ kernels for high-speed inference on Windows/Linux GPU environments.
+
 ⚠️ Prerequisites
 
 This node requires specific 2-bit/4-bit quantization libraries. Before installing, ensure you have the following in your ComfyUI environment:
@@ -33,7 +34,7 @@ pip install hqq gemlite triton-windows
     Bash
     
     ```
-    .\python_embeded\python.exe -m pip install -r custom_nodes\ComfyUI-Bonsai-4B\requi
+    .\python_embeded\python.exe -m pip install -r custom_nodes\ComfyUI-Bonsai-4B\requirements.txt
     ```
 
 ###(Optional) If you don't use Git, download the folder and place it in your custom_nodes/ directory.
