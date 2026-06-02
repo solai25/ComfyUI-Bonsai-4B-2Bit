@@ -1,5 +1,6 @@
 ﻿ComfyUI-Bonsai-4B
 
+<img height="350" alt="Custom Resolution 🐲" src="example_workflow\Bonsai-image-4B (2Bit).png" />
 A custom ComfyUI node to run the Bonsai 4B (2-bit Ternary) image generation model locally. This node utilizes optimized Gemlite and HQQ kernels for high-speed inference on Windows/Linux GPU environments.
 ⚠️ Prerequisites
 
