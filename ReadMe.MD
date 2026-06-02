@@ -1,7 +1,10 @@
 ﻿ComfyUI-Bonsai-4B
 
 <img height="350" alt="Custom Resolution 🐲" src="example_workflow\Bonsai-image-4B (2Bit).png" />
+<<<<<<< HEAD
 
+=======
+>>>>>>> dec336dfebf152cee0d07fa04d105b29455334fd
 A custom ComfyUI node to run the Bonsai 4B (2-bit Ternary) image generation model locally. This node utilizes optimized Gemlite and HQQ kernels for high-speed inference on Windows/Linux GPU environments.
 ⚠️ Prerequisites
 
@@ -27,6 +30,7 @@ pip install hqq gemlite triton-windows
 
 The node expects the model files to be organized in your ComfyUI directory:
 
+<<<<<<< HEAD
 ```
 ComfyUI/
 └── models/
@@ -35,6 +39,16 @@ ComfyUI/
         ├── transformer-gemlite-int2/
         └── vae/
 ```
+=======
+'''
+    ComfyUI/
+    └── models/
+        └── Bonsai-4B/   <-- Create this folder
+            ├── text_encoder-hqq-4bit/
+            ├── transformer-gemlite-int2/
+            └── vae/
+'''
+>>>>>>> dec336dfebf152cee0d07fa04d105b29455334fd
 
 Note: If the model is not found, the node will attempt to automatically download the required weights from Hugging Face upon the first run.
 
