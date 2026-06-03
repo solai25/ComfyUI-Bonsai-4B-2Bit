@@ -284,6 +284,9 @@ def _load_vae(path: Path, *, device: str = DEFAULT_DEVICE) -> Any:
     from diffusers import AutoencoderKLFlux2
 
     vae = AutoencoderKLFlux2.from_pretrained(str(path), torch_dtype=torch.bfloat16)
+    # 💥 ADD THIS LINE: Break the final image decode into smaller VRAM chunks
+    vae.enable_tiling()
+    
     return vae.to(device).eval()
 
 
@@ -449,11 +452,21 @@ class GpuPipeline:
         log.info("loaded transformer (%s) in %.2fs", self._backend, time.perf_counter() - t0)
 
         t0 = time.perf_counter()
-        self._text_encoder = _load_text_encoder(self.text_encoder_path, device=self.device)
+        # 💥 Corrected Text Encoder Check:
+        if self.text_encoder_path and getattr(self, "_text_encoder", None) is None:
+            self._text_encoder = _load_text_encoder(
+                self.text_encoder_path, 
+                device="cpu"
+            )
         log.info("loaded text encoder in %.2fs", time.perf_counter() - t0)
 
         t0 = time.perf_counter()
-        self._vae = _load_vae(self.vae_path, device=self.device)
+        # 💥 Corrected VAE Check:
+        if self.vae_path and getattr(self, "_vae", None) is None:
+            self._vae = _load_vae(
+                self.vae_path, 
+                device="cpu"
+            )
         log.info("loaded VAE in %.2fs", time.perf_counter() - t0)
 
         t0 = time.perf_counter()

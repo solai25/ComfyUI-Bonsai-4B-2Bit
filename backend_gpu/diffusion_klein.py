@@ -138,25 +138,9 @@ def diffusion_forward(
     guidance: float = DEFAULT_GUIDANCE,
     scheduler: Optional[FlowMatchEulerDiscreteScheduler] = None,
 ) -> Image.Image:
-    """Klein 4B text-to-image forward.
-
-    Args:
-        transformer: gemlite-patched Flux2Transformer2DModel (fp16 internal stream).
-        text_encoder: Mistral-3 text encoder (bf16).
-        tokenizer: PixtralProcessor / AutoProcessor for the text encoder.
-        vae: AutoencoderKLFlux2 (bf16 native).
-        prompt: text prompt.
-        height/width: output image size in pixels (must be multiple of 32).
-        num_steps: flow-matching denoising steps (default 4).
-        seed: torch CPU generator seed for the initial noise.
-        max_sequence_length: max text tokens (default 512).
-        guidance: scalar guidance fed to the transformer (no CFG; single forward).
-        scheduler: optional pre-loaded scheduler; defaults to FLUX.2 dynamic-shift.
-
-    Returns: PIL.Image.Image, RGB, (height, width).
-    """
+    """Klein 4B text-to-image forward (OPTIMIZED FOR 8GB VRAM)."""
+    
     transformer_device = next(transformer.parameters()).device
-    vae_device = next(vae.parameters()).device
 
     if height % 32 != 0 or width % 32 != 0:
         raise ValueError(f"height={height} and width={width} must be multiples of 32 (vae_scale_factor*2).")
@@ -164,45 +148,48 @@ def diffusion_forward(
     if scheduler is None:
         scheduler = _build_default_scheduler()
 
-    # 1. Text encode (Klein/Qwen3, bf16 stream). The upstream Mistral helper
-    #    would silently use the wrong layers + Pixtral system message and
-    #    produce off-distribution embeds for Klein.
+    # ==========================================
+    # STEP 1: TEXT ENCODING (Move to GPU, then immediately Offload)
+    # ==========================================
     log.info("encoding prompt (max_seq=%d, klein/qwen3)", max_sequence_length)
+    
+    # Move Text Encoder to GPU just in time
+    text_encoder.to(transformer_device)
+    
     prompt_embeds = _encode_klein_qwen3_prompt(
         text_encoder=text_encoder,
         tokenizer=tokenizer,
         prompt=prompt,
         max_sequence_length=max_sequence_length,
-    )  # (1, max_seq, 3*hidden_dim)
-    text_ids = Flux2Pipeline._prepare_text_ids(prompt_embeds).to(transformer_device)  # (1, max_seq, 4)
+    )
+    text_ids = Flux2Pipeline._prepare_text_ids(prompt_embeds).to(transformer_device)
+    
+    # 💥 MASSIVE VRAM SAVINGS: Offload Text Encoder to CPU and clear cache
+    text_encoder.to("cpu")
+    torch.cuda.empty_cache()
+    # ==========================================
 
-    # Activation dtype: gemlite int1/int2 kernels require fp16. The bf16 arm
-    # (`bfl-klein-bf16-gemlite`) wants native bf16 throughout. Loaders mark the
-    # transformer with `_inference_dtype`; default to fp16 if unset for backwards
-    # compatibility with callers that build a model outside this package.
     activation_dtype = getattr(transformer, "_inference_dtype", torch.float16)
     prompt_embeds_t = prompt_embeds.to(device=transformer_device, dtype=activation_dtype)
 
-    # 2. Prepare initial latents in packed (B, image_seq_len, C) form.
-    # vae_scale_factor=8 (8x VAE compression) and an additional 2x2 patch pack -> 16x total.
+    # 2. Prepare initial latents
     vae_scale_factor = 2 ** (len(vae.config.block_out_channels) - 1)
-    h_lat = 2 * (int(height) // (vae_scale_factor * 2))  # latent H pre-patchify (= H/8)
-    w_lat = 2 * (int(width) // (vae_scale_factor * 2))   # latent W pre-patchify
-    in_channels_latents = transformer.config.in_channels // 4  # = 32 for Klein (in_channels=128)
+    h_lat = 2 * (int(height) // (vae_scale_factor * 2))
+    w_lat = 2 * (int(width) // (vae_scale_factor * 2))
+    in_channels_latents = transformer.config.in_channels // 4
 
-    # Sample noise on CPU with explicit generator for determinism, then move.
     gen = torch.Generator(device="cpu").manual_seed(int(seed))
-    noise_shape = (1, in_channels_latents * 4, h_lat // 2, w_lat // 2)  # (1, 128, H/16, W/16)
+    noise_shape = (1, in_channels_latents * 4, h_lat // 2, w_lat // 2)
     latents_4d = torch.randn(noise_shape, generator=gen, dtype=torch.float32)
     latents_4d = latents_4d.to(device=transformer_device, dtype=activation_dtype)
 
-    latent_ids = Flux2Pipeline._prepare_latent_ids(latents_4d).to(transformer_device)  # (1, image_seq_len, 4)
-    latents = Flux2Pipeline._pack_latents(latents_4d)  # (1, image_seq_len, 128) fp16
+    latent_ids = Flux2Pipeline._prepare_latent_ids(latents_4d).to(transformer_device)
+    latents = Flux2Pipeline._pack_latents(latents_4d)
     image_seq_len = latents.shape[1]
-    log.info("latents: 4D=%s -> packed=%s  image_seq_len=%d",
-             tuple(latents_4d.shape), tuple(latents.shape), image_seq_len)
+    
+    log.info("latents: 4D=%s -> packed=%s  image_seq_len=%d", tuple(latents_4d.shape), tuple(latents.shape), image_seq_len)
 
-    # 3. Schedule timesteps with FLUX.2 empirical-mu shift.
+    # 3. Schedule timesteps
     mu = _mflux_empirical_mu(image_seq_len=image_seq_len, num_steps=num_steps)
     sigmas = np.linspace(1.0, 1.0 / num_steps, num_steps)
     if hasattr(scheduler.config, "use_flow_sigmas") and scheduler.config.use_flow_sigmas:
@@ -212,16 +199,13 @@ def diffusion_forward(
     )
     if hasattr(scheduler, "set_begin_index"):
         scheduler.set_begin_index(0)
+        
     log.info("scheduling: num_steps=%d mu=%.4f", num_steps_eff, mu)
+    guidance_t = torch.full([1], guidance, device=transformer_device, dtype=torch.float32).expand(latents.shape[0])
 
-    # Guidance is a per-batch scalar fed to the transformer (no two-pass CFG).
-    guidance_t = torch.full([1], guidance, device=transformer_device, dtype=torch.float32)
-    guidance_t = guidance_t.expand(latents.shape[0])
-
-    # 4. Denoising loop (single forward per step; gemlite + skip-list both fp16).
+    # 4. Denoising loop
     for i, t in enumerate(timesteps):
         timestep = t.expand(latents.shape[0]).to(latents.dtype)
-
         noise_pred = transformer(
             hidden_states=latents,
             timestep=timestep / 1000,
@@ -237,25 +221,34 @@ def diffusion_forward(
         if latents.dtype != latents_dtype:
             latents = latents.to(latents_dtype)
 
-    # 5. Unpack -> denormalize via VAE batch-norm stats -> unpatchify -> decode.
-    # Cast to bf16 (vae dtype) on the way out of the transformer stream.
-    latents = Flux2Pipeline._unpack_latents_with_ids(latents, latent_ids)  # (1, 128, H/16, W/16)
+    # ==========================================
+    # STEP 5: VAE DECODING (Move to GPU, Decode, then Offload)
+    # ==========================================
+    # Move VAE to GPU only when denoising is completely finished
+    vae.to(transformer_device)
+    vae_device = transformer_device
+
+    latents = Flux2Pipeline._unpack_latents_with_ids(latents, latent_ids)
     latents = latents.to(device=vae_device, dtype=torch.bfloat16)
 
     bn_mean = vae.bn.running_mean.view(1, -1, 1, 1).to(latents.device, latents.dtype)
-    bn_std = torch.sqrt(vae.bn.running_var.view(1, -1, 1, 1) + vae.config.batch_norm_eps).to(
-        latents.device, latents.dtype,
-    )
+    bn_std = torch.sqrt(vae.bn.running_var.view(1, -1, 1, 1) + vae.config.batch_norm_eps).to(latents.device, latents.dtype)
     latents = latents * bn_std + bn_mean
-    latents = Flux2Pipeline._unpatchify_latents(latents)  # (1, 32, H/8, W/8)
+    latents = Flux2Pipeline._unpatchify_latents(latents)
 
-    image = vae.decode(latents, return_dict=False)[0]  # (1, 3, H, W) bf16, range [-1, 1]
+    image = vae.decode(latents, return_dict=False)[0]
+    
+    # 💥 MORE VRAM SAVINGS: Offload VAE back to CPU so the GPU is clean for the next generation
+    vae.to("cpu")
+    torch.cuda.empty_cache()
+    # ==========================================
 
-    # 6. Tensor -> PIL (range conversion, no diffusers VaeImageProcessor dep).
+    # 6. Tensor -> PIL
     img = image[0].clamp(-1.0, 1.0).float()
     img = (img + 1.0) * 127.5
     img = img.clamp(0.0, 255.0).round().to(torch.uint8)
-    img = img.permute(1, 2, 0).cpu().numpy()  # HWC
+    img = img.permute(1, 2, 0).cpu().numpy()
+    
     return Image.fromarray(img, mode="RGB")
 
 
