@@ -5,7 +5,7 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "BonsaiTernaryNode": "🌳 Bonsai 4B (Gemlite 2-bit)"
+    "BonsaiTernaryNode": "🌳 Bonsai-Image 4B "
 }
 
 __all__ = ['NODE_CLASS_MAPPINGS', 'NODE_DISPLAY_NAME_MAPPINGS']

@@ -1,28 +1,30 @@
 {
-  "id": "e1519ca7-aa62-4fdf-ab94-dee05ec53f76",
+  "id": "fb5ba66e-7b6d-4243-9b69-0049ebb347fa",
   "revision": 0,
-  "last_node_id": 7,
-  "last_link_id": 7,
+  "last_node_id": 9,
+  "last_link_id": 8,
   "nodes": [
     {
       "id": 2,
       "type": "PreviewImage",
       "pos": [
-        880,
+        1000,
         840
       ],
       "size": [
         280,
         470
       ],
-      "flags": {},
+      "flags": {
+        "collapsed": false
+      },
       "order": 1,
       "mode": 0,
       "inputs": [
         {
           "name": "images",
           "type": "IMAGE",
-          "link": 2
+          "link": 7
         }
       ],
       "outputs": [],
@@ -39,14 +41,14 @@
       "widgets_values": []
     },
     {
-      "id": 3,
+      "id": 8,
       "type": "BonsaiTernaryNode",
       "pos": [
         600,
         840
       ],
       "size": [
-        270,
+        390,
         470
       ],
       "flags": {},
@@ -58,11 +60,13 @@
           "name": "image",
           "type": "IMAGE",
           "links": [
-            2
+            7
           ]
         }
       ],
       "properties": {
+        "aux_id": "solai25/ComfyUI-Bonsai-4B-2Bit",
+        "ver": "f78ae01c85e2ebe3fd690da168b4d5d83876a5bf",
         "Node name for S&R": "BonsaiTernaryNode",
         "ue_properties": {
           "widget_ue_connectable": {},
@@ -71,21 +75,22 @@
         }
       },
       "widgets_values": [
+        "Bonsai-4B (1-Bit Binary)",
         "A regal woman with dark, wet hair and golden eyes gazes forward under a vibrant purple glow, her face adorned with an ornate gold crown studded with jewels and intricate necklaces that shimmer against the electric energy crackling around her. The ambient lighting casts radiant pink hues across her skin while stylized lightning effects pulse in vivid magenta along her shoulders, enhancing the mystical aura of her royal attire. Her expression is serene yet intense as droplets of sweat glisten on her cheeks beneath a glowing headpiece and heavy gold choker, suggesting both power and vulnerability within this fantastical setting.",
-        768,
         1024,
+        1536,
         4,
         1,
         42,
         "fixed",
-        "C:\\ComfyUI_portable\\ComfyUI\\models\\Bonsai-4B"
+        "C:\\ComfyUI_portable\\ComfyUI\\models"
       ]
     }
   ],
   "links": [
     [
-      2,
-      3,
+      7,
+      8,
       0,
       2,
       0,
@@ -98,10 +103,10 @@
     "ue_links": [],
     "links_added_by_ue": [],
     "ds": {
-      "scale": 0.9646149645000102,
+      "scale": 0.964614964500011,
       "offset": [
-        -18.418783432819396,
-        -529.5276329339688
+        -235.09459097974764,
+        -654.5724488690979
       ]
     },
     "frontendVersion": "1.44.19",
